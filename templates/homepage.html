@@ -1,0 +1,54 @@
+<!doctype html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bootstrap Dual Listbox</title>
+    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/bootstrap-duallistbox.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/prettify/r298/run_prettify.min.js"></script>
+    <script src="../static/jquery.bootstrap-duallistbox.js"></script>
+  </head>
+<body class="container">
+    <div class="col-md-7">
+      {% if options %}
+      <select multiple="multiple" size="10" name="duallistbox_demo2" class="demo2">
+        {% for option in options %}
+        <option value="{{option}}" {% if options[option] %} selected="selected"{% endif %}> {{option}} </option>
+        {% endfor %}
+      </select>
+      {% endif %}
+      <script>
+        var demo2 = $('.demo2').bootstrapDualListbox({
+          preserveSelectionOnMove: 'moved',
+          moveOnSelect: false
+        });
+        
+        var lastState = $('.demo2').val();
+        // listen on list change
+        $('.demo2').on('change',function (e) {
+            var newState = $(this).val();
+            
+            added_elements = $(newState).not(lastState).get()
+            removed_elements = $(lastState).not(newState).get()
+            lastState = newState;
+            
+            var data = {
+            "added_elements": added_elements,
+            "removed_elements": removed_elements
+            }
+            $.ajax({
+              type: 'POST',
+              url: "/change",
+              data: JSON.stringify(data), 
+              dataType: 'json', 
+              error: function(xhr, type) {
+              }
+          });
+        })
+
+      </script>
+    </div>
+</body>
